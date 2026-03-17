@@ -1,0 +1,42 @@
+apiVersion: neuvector.com/v1
+kind: NvVulnerabilityProfile
+metadata:
+  creationTimestamp: "2026-03-17T22:25:47Z"
+  generation: 181
+  name: default
+  resourceVersion: "11448"
+  uid: 5f3145a7-9ce9-431e-8fce-09876a725bab
+spec:
+  profile:
+    entries:
+    - comment: 'Managed by SDS Operator, VEX: not_affected, Justification: component_not_present'
+      days: 30
+      domains:
+      - tenant-ns-a
+      images:
+      - my-company-registry/my-registry-project/app1:latest
+      name: CVE-2026-1234
+    - comment: 'Managed by SDS Operator, VEX: not_affected, Justification: inline_mitigations_already_exist'
+      domains:
+      - tenant-ns-a
+      images:
+      - my-company-registry/my-registry-project/app2:*
+      name: CVE-2022-1454
+    - comment: 'Managed by SDS Operator, VEX: not_affected, Justification: inline_mitigations_already_exist'
+      domains:
+      - tenant-ns-a
+      images:
+      - my-company-registry/my-registry-project/app2:*
+      name: CVE-2018-6753
+    - comment: 'Managed by SDS Operator, VEX: not_affected, Justification: inline_mitigations_already_exist'
+      domains:
+      - tenant-ns-a
+      images:
+      - my-company-registry/my-registry-project/app2:*
+      name: CVE-2021-1112
+    - comment: 'Managed by SDS Operator, VEX: fixed, Justification: vulnerable_code_not_in_execute_path'
+      domains:
+      - tenant-ns-b
+      images:
+      - my-company-registry/my-registry-project/app-3-backend:v1.0.1
+      name: CVE-2026-1444

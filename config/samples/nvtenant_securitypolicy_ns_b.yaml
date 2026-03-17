@@ -1,0 +1,11 @@
+apiVersion: nvtenant.severinsdigitalsolutions.nl/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: example-securitypolicy
+  namespace: tenant-ns-b
+spec:
+  exemptions:
+    - cveId: CVE-2026-1444
+      image: my-company-registry/my-registry-project/app-3-backend:v1.0.1
+      vexStatus: "fixed" # <-- Required: VEX status for this exemption: not_affected, affected, fixed, under_investigation
+      justification: "vulnerable_code_not_in_execute_path" # <-- Optional: free-format text or vex justification: component_not_present, vulnerable_code_not_present, vulnerable_code_not_in_execute_path, vulnerable_code_cannot_be_controlled_by_adversary, inline_mitigations_already_exist

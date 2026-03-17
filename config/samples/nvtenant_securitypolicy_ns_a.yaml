@@ -1,0 +1,25 @@
+apiVersion: nvtenant.severinsdigitalsolutions.nl/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: example-securitypolicy
+  namespace: tenant-ns-a
+spec:
+  exemptions:
+    - cveId: CVE-2026-1234
+      image: my-company-registry/my-registry-project/app1:latest
+      vexStatus: "not_affected" # <-- Required: VEX status for this exemption: not_affected, affected, fixed, under_investigation
+      expiresAt: "31/12/2026" # <-- Optional: expiration date for this exemption in dd/mm/yyyy format
+      days: 30 # <-- Optional: number of days the CVE is known but not yet fixed
+      justification: "component_not_present" # <-- Optional: free-format text or vex justification: component_not_present, vulnerable_code_not_present, vulnerable_code_not_in_execute_path, vulnerable_code_cannot_be_controlled_by_adversary, inline_mitigations_already_exist
+    - cveId: CVE-2022-1454
+      image: my-company-registry/my-registry-project/app2:*
+      vexStatus: "not_affected"
+      justification: "inline_mitigations_already_exist"
+    - cveId: CVE-2018-6753
+      image: my-company-registry/my-registry-project/app2:*
+      vexStatus: "not_affected"
+      justification: "inline_mitigations_already_exist"
+    - cveId: CVE-2021-1112
+      image: my-company-registry/my-registry-project/app2:*
+      vexStatus: "not_affected"
+      justification: "inline_mitigations_already_exist"
