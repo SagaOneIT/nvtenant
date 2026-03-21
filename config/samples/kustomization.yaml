@@ -1,4 +1,5 @@
 ## Append samples of your project ##
 resources:
-- nvtenant_v1alpha1_securitypolicy.yaml
+- nvtenant_v1alpha1_securitypolicy_ns_a.yaml
+- nvtenant_v1alpha1_securitypolicy_ns_b.yaml
 # +kubebuilder:scaffold:manifestskustomizesamples

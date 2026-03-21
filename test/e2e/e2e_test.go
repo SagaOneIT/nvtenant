@@ -30,7 +30,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"nvtenant.sagaone.it/test/utils"
+	"nvtenant.severinsdigitalsolutions.nl/test/utils"
 )
 
 // namespace where the project is deployed in

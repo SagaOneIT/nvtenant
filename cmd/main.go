@@ -35,8 +35,8 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	nvtenantv1alpha1 "nvtenant.sagaone.it/api/v1alpha1"
-	"nvtenant.sagaone.it/internal/controller"
+	nvtenantv1alpha1 "nvtenant.severinsdigitalsolutions.nl/api/v1alpha1"
+	"nvtenant.severinsdigitalsolutions.nl/internal/controller"
 	// +kubebuilder:scaffold:imports
 )
 

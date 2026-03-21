@@ -2,7 +2,7 @@
 
 ## Description
 
-De **SDS SecurityPolicy Operator** automatiseert het beheer van vulnerability uitzonderingen binnen NeuVector op basis van Custom Resources. In een multi-tenant OpenShift omgeving stelt deze operator applicatieteams in staat om zelfstandig CVE-vrijstellingen aan te vragen via `SecurityPolicy` objecten in hun eigen namespace. De operator aggregeert deze aanvragen, valideert de TTL (ExpiresAt) en synchroniseert ze naar het centrale `NvVulnerabilityProfile` van NeuVector.
+De **NeuVector multi-tenant Security Operator** automatiseert het beheer van vulnerability uitzonderingen binnen NeuVector op basis van Custom Resources. In een multi-tenant OpenShift omgeving stelt deze operator applicatieteams in staat om zelfstandig CVE-vrijstellingen aan te vragen via `SecurityPolicy` objecten in hun eigen namespace. De operator aggregeert deze aanvragen, valideert de TTL (ExpiresAt) en synchroniseert ze naar het centrale `NvVulnerabilityProfile` van NeuVector.
 
 Dit project is ontworpen om te voldoen aan de **BIO 2.0** richtlijnen door volledige traceerbaarheid te bieden van uitzonderingen, inclusief VEX-compatibele metadata zoals status en rechtvaardiging, direct zichtbaar in de NeuVector console.
 
@@ -20,7 +20,7 @@ De operator monitort alle `SecurityPolicy` resources en voert een globale reconc
 
 ```
 [Namespace A: SecurityPolicy] ──┐
-[Namespace B: SecurityPolicy] ──┼──► [SDS Operator] ──► [NvVulnerabilityProfile/default]
+[Namespace B: SecurityPolicy] ──┼──► [NV Tenant Operator] ──► [NvVulnerabilityProfile/default]
 [Namespace C: SecurityPolicy] ──┘
 ```
 
@@ -45,6 +45,15 @@ spec:
       expiresAt: "31/12/2026"
 ```
 
+## helm
+
+Easiest way to deploy:
+``` bash
+helm install nvtenant-operator oci://registry-1.docker.io/severinsm/nvtenant-operator --version 0.1.0 \
+  --namespace nvtenant-operator \
+  --create-namespace
+```
+
 ## Getting Started
 
 ## Prerequisites
@@ -65,7 +74,7 @@ spec:
 ```sh
 make manifests
 make install
-make deploy IMG=severinsm/sds-operator:latest
+make deploy IMG=severinsm/nvtenant-operator:latest
 ```
 
 **Install the CRDs into the cluster:**
@@ -77,7 +86,7 @@ make install
 **Deploy the Manager to the cluster with the image specified by `IMG`:**
 
 ```sh
-make deploy IMG=severinsm/sds-operator:tag
+make deploy IMG=severinsm/nvtenant-operator:tag
 ```
 
 > **NOTE**: If you encounter RBAC errors, you may need to grant yourself cluster-admin
@@ -120,7 +129,7 @@ Following the options to release and provide this solution to the users.
 1. Build the installer for the image built and published in the registry:
 
 ```sh
-make build-installer IMG=severinsm/sds-operator:tag
+make build-installer IMG=severinsm/nvtenant-operator:tag
 ```
 
 **NOTE:** The makefile target mentioned above generates an 'install.yaml'

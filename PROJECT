@@ -6,8 +6,12 @@ cliVersion: 4.13.0
 domain: severinsdigitalsolutions.nl
 layout:
 - go.kubebuilder.io/v4
+plugins:
+  helm.kubebuilder.io/v2-alpha:
+    manifests: dist/install.yaml
+    output: dist
 projectName: neuvector
-repo: nvtenant.sagaone.it
+repo: SagaOneIT\nvtenant
 resources:
 - api:
     crdVersion: v1
@@ -16,6 +20,6 @@ resources:
   domain: severinsdigitalsolutions.nl
   group: nvtenant
   kind: SecurityPolicy
-  path: nvtenant.sagaone.it/api/v1alpha1
+  path: nvtenant.severinsdigitalsolutions.nl/api/v1alpha1
   version: v1alpha1
 version: "3"

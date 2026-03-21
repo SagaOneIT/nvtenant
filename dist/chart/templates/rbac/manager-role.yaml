@@ -1,0 +1,42 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "neuvector.resourceName" (dict "suffix" "manager-role" "context" $) }}
+rules:
+- apiGroups:
+  - neuvector.com
+  resources:
+  - nvvulnerabilityprofiles
+  verbs:
+  - create
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - nvtenant.severinsdigitalsolutions.nl
+  resources:
+  - securitypolicies
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - nvtenant.severinsdigitalsolutions.nl
+  resources:
+  - securitypolicies/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - nvtenant.severinsdigitalsolutions.nl
+  resources:
+  - securitypolicies/status
+  verbs:
+  - get
+  - patch
+  - update

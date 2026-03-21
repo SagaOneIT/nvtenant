@@ -27,7 +27,7 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	nvtenantv1alpha1 "nvtenant.sagaone.it/api/v1alpha1"
+	nvtenantv1alpha1 "nvtenant.severinsdigitalsolutions.nl/api/v1alpha1"
 )
 
 var _ = Describe("SecurityPolicy Controller", func() {

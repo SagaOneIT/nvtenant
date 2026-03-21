@@ -1,4 +1,4 @@
-module nvtenant.sagaone.it
+module nvtenant.severinsdigitalsolutions.nl
 
 go 1.25.3
 

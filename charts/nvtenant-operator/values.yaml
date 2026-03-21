@@ -1,0 +1,21 @@
+image:
+  repository: severinsm/nvtenant-operator
+  tag: v1.0.1
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+serviceAccount:
+  name: nvtenant-controller-manager
+
+namespace:
+  create: true
+  name: nvtenant-operator
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 64Mi

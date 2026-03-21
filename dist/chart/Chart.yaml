@@ -1,0 +1,19 @@
+apiVersion: v2
+name: nvtenant-operator
+description: SecurityPolicy Operator for NeuVector multi-tenant vulnerability exemption management
+type: application
+version: 0.1.0
+appVersion: "v0.1.0"
+keywords:
+  - neuvector
+  - security
+  - openshift
+  - nvnulnerabilityprofile
+  - exemption
+  - securitypolicy
+  - operator
+  - kubernetes
+maintainers:
+  - name: Severins Digital Solutions
+annotations:
+  kubebuilder.io/generated-by: kubebuilder
