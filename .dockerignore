@@ -4,6 +4,9 @@
 
 # Re-include Go source files (but not *_test.go)
 !**/*.go
+!cmd/**
+!internal/**
+!api/**
 **/*_test.go
 
 # Re-include Go module files

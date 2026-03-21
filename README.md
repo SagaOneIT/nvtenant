@@ -21,7 +21,7 @@ Dit project is ontworpen om te voldoen aan de **BIO 2.0** richtlijnen door volle
 ```sh
 make manifests
 make install
-make deploy IMG=<your-registry>/sds-operator:latest
+make deploy IMG=severinsm/sds-operator:latest
 ```
 
 ### Gebruik

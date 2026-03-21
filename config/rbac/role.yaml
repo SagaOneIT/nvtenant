@@ -9,6 +9,7 @@ rules:
   resources:
   - nvvulnerabilityprofiles
   verbs:
+  - create
   - get
   - list
   - patch
