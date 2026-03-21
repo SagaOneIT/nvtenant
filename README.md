@@ -14,17 +14,18 @@ Dit project is ontworpen om te voldoen aan de **BIO 2.0** richtlijnen door volle
 - **Global Sync**: Automatische merge van alle namespaced policies naar het globale `default` NeuVector profiel.
 - **Self-Healing**: De operator maakt het `default` NeuVector profiel automatisch aan als dit ontbreekt.
 
-## Getting Started
+## Architecture
 
-### Installatie
+De operator monitort alle `SecurityPolicy` resources en voert een globale reconciliatie uit op de `NvVulnerabilityProfile` (CRD van NeuVector). Hierdoor blijft de security posture consistent over het gehele platform terwijl de administratieve last voor het security team wordt verlaagd.
 
-```sh
-make manifests
-make install
-make deploy IMG=severinsm/sds-operator:latest
+```
+[Namespace A: SecurityPolicy] ──┐
+[Namespace B: SecurityPolicy] ──┼──► [SDS Operator] ──► [NvVulnerabilityProfile/default]
+[Namespace C: SecurityPolicy] ──┘
 ```
 
-### Gebruik
+
+### Usage
 
 Maak een `SecurityPolicy` aan in je namespace:
 
@@ -44,15 +45,7 @@ spec:
       expiresAt: "31/12/2026"
 ```
 
-## Architecture
-
-De operator monitort alle `SecurityPolicy` resources en voert een globale reconciliatie uit op de `NvVulnerabilityProfile` (CRD van NeuVector). Hierdoor blijft de security posture consistent over het gehele platform terwijl de administratieve last voor het security team wordt verlaagd.
-
-```
-[Namespace A: SecurityPolicy] ──┐
-[Namespace B: SecurityPolicy] ──┼──► [SDS Operator] ──► [NvVulnerabilityProfile/default]
-[Namespace C: SecurityPolicy] ──┘
-```
+## Getting Started
 
 ## Prerequisites
 
@@ -60,11 +53,6 @@ De operator monitort alle `SecurityPolicy` resources en voert een globale reconc
 - NeuVector geïnstalleerd met de `nvvulnerabilityprofiles.neuvector.com` CRD
 - `kubectl` / `oc` CLI
 
-## License
-
-Apache 2.0
-
-## Getting Started
 
 ### Prerequisites
 - go version v1.24.6+
@@ -72,16 +60,13 @@ Apache 2.0
 - kubectl version v1.11.3+.
 - Access to a Kubernetes v1.11.3+ cluster.
 
-### To Deploy on the cluster
-**Build and push your image to the location specified by `IMG`:**
+### Installatie
 
 ```sh
-make docker-build docker-push IMG=<some-registry>/neuvector:tag
+make manifests
+make install
+make deploy IMG=severinsm/sds-operator:latest
 ```
-
-**NOTE:** This image ought to be published in the personal registry you specified.
-And it is required to have access to pull the image from the working environment.
-Make sure you have the proper permission to the registry if the above commands don’t work.
 
 **Install the CRDs into the cluster:**
 
@@ -92,7 +77,7 @@ make install
 **Deploy the Manager to the cluster with the image specified by `IMG`:**
 
 ```sh
-make deploy IMG=<some-registry>/neuvector:tag
+make deploy IMG=severinsm/sds-operator:tag
 ```
 
 > **NOTE**: If you encounter RBAC errors, you may need to grant yourself cluster-admin
@@ -135,7 +120,7 @@ Following the options to release and provide this solution to the users.
 1. Build the installer for the image built and published in the registry:
 
 ```sh
-make build-installer IMG=<some-registry>/neuvector:tag
+make build-installer IMG=severinsm/sds-operator:tag
 ```
 
 **NOTE:** The makefile target mentioned above generates an 'install.yaml'
@@ -149,7 +134,7 @@ Users can just run 'kubectl apply -f <URL for YAML BUNDLE>' to install
 the project, i.e.:
 
 ```sh
-kubectl apply -f https://raw.githubusercontent.com/<org>/neuvector/<tag or branch>/dist/install.yaml
+kubectl apply -f https://raw.githubusercontent.com/SagaOneIT/nvtenant/<tag or branch>/dist/install.yaml
 ```
 
 ### By providing a Helm Chart
