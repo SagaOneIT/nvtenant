@@ -31,9 +31,9 @@ This project is designed to provide full traceability of exceptions, including V
 **CVE Exemption Flow:**
 
 ```
-[Namespace A: SecurityPolicy] --+
-[Namespace B: SecurityPolicy] --+--> [Operator] --> [NvVulnerabilityProfile/default]
-[Namespace C: SecurityPolicy] --+
+[Namespace A: SecurityPolicy] ──┐
+[Namespace B: SecurityPolicy] ──┼──► [NV Tenant Operator] ──► [NvVulnerabilityProfile/default]
+[Namespace C: SecurityPolicy] ──┘
 ```
 
 **Event Routing Flow:**
