@@ -18,6 +18,7 @@ rules:
 - apiGroups:
   - nvtenant.severinsdigitalsolutions.nl
   resources:
+  - securitynotificationpolicies
   - securitypolicies
   verbs:
   - create
@@ -30,12 +31,14 @@ rules:
 - apiGroups:
   - nvtenant.severinsdigitalsolutions.nl
   resources:
+  - securitynotificationpolicies/finalizers
   - securitypolicies/finalizers
   verbs:
   - update
 - apiGroups:
   - nvtenant.severinsdigitalsolutions.nl
   resources:
+  - securitynotificationpolicies/status
   - securitypolicies/status
   verbs:
   - get

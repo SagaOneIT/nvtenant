@@ -1,0 +1,40 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: manager
+    main: ./cmd/main.go
+    env:
+      - CGO_ENABLED=0
+    goos: [linux]
+    goarch: [amd64, arm64]
+
+dockers:
+  - id: nvtenant-operator
+    goos: linux
+    goarch: amd64
+    ids: [manager]
+    image_templates:
+      - "ghcr.io/{{ .Env.GITHUB_REPOSITORY_OWNER }}/nvtenant-operator:{{ .Version }}"
+      - "ghcr.io/{{ .Env.GITHUB_REPOSITORY_OWNER }}/nvtenant-operator:{{ .ShortCommit }}"
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - "--platform=linux/amd64"
+    extra_files:
+      - config/
+      - helm/
+
+  - id: nvtenant-operator-arm64
+    goos: linux
+    goarch: arm64
+    ids: [manager]
+    image_templates:
+      - "ghcr.io/{{ .Env.GITHUB_REPOSITORY_OWNER }}/nvtenant-operator:{{ .Version }}-arm64"
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - "--platform=linux/arm64"

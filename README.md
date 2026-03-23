@@ -1,4 +1,4 @@
-# NeuVector Tenant Operator
+# NeuVector multi-tenant Security Operator
 
 ## Description
 

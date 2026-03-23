@@ -29,7 +29,7 @@ jobs:
       - name: Create kind cluster
         run: kind create cluster
 
-      - name: Prepare neuvector
+      - name: Prepare nvtenant-operator image for kind
         run: |
           go mod tidy
           make docker-build IMG=controller:latest
@@ -63,7 +63,7 @@ jobs:
 
       - name: Deploy manager via Helm
         run: |
-          make helm-deploy IMG=neuvector:v0.1.0
+          make helm-deploy IMG=controller:latest
 
       - name: Check Helm release status
         run: |

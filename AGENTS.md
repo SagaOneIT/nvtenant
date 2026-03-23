@@ -1,4 +1,4 @@
-# neuvector - AI Agent Guide
+# nvtenant-operator - AI Agent Guide
 
 ## Project Structure
 

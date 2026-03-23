@@ -34,16 +34,16 @@ import (
 )
 
 // namespace where the project is deployed in
-const namespace = "neuvector-system"
+const namespace = "nvtenant-operator"
 
 // serviceAccountName created for the project
-const serviceAccountName = "neuvector-controller-manager"
+const serviceAccountName = "nvtenant-controller-manager"
 
 // metricsServiceName is the name of the metrics service of the project
-const metricsServiceName = "neuvector-controller-manager-metrics-service"
+const metricsServiceName = "nvtenant-controller-manager-metrics-service"
 
 // metricsRoleBindingName is the name of the RBAC that will be created to allow get the metrics data
-const metricsRoleBindingName = "neuvector-metrics-binding"
+const metricsRoleBindingName = "nvtenant-metrics-binding"
 
 var _ = Describe("Manager", Ordered, func() {
 	var controllerPodName string
@@ -67,6 +67,21 @@ var _ = Describe("Manager", Ordered, func() {
 		cmd = exec.Command("make", "install")
 		_, err = utils.Run(cmd)
 		Expect(err).NotTo(HaveOccurred(), "Failed to install CRDs")
+
+		By("deploying the controller-manager")
+		cmd = exec.Command("make", "deploy", fmt.Sprintf("IMG=%s", managerImage))
+		_, err = utils.Run(cmd)
+		Expect(err).NotTo(HaveOccurred(), "Failed to deploy the controller-manager")
+
+		By("waiting for cert-manager to issue the serving certificate")
+		cmd = exec.Command("kubectl", "wait",
+			"certificate/nvtenant-serving-cert",
+			"-n", namespace,
+			"--for=condition=Ready",
+			"--timeout=2m",
+		)
+		_, err = utils.Run(cmd)
+		Expect(err).NotTo(HaveOccurred(), "Serving certificate not ready in time")
 
 		By("deploying the controller-manager")
 		cmd = exec.Command("make", "deploy", fmt.Sprintf("IMG=%s", managerImage))
@@ -212,6 +227,31 @@ var _ = Describe("Manager", Ordered, func() {
 			}
 			Eventually(verifyMetricsServerStarted, 3*time.Minute, time.Second).Should(Succeed())
 
+			By("waiting for the webhook service endpoints to be ready")
+			verifyWebhookEndpointsReady := func(g Gomega) {
+				cmd := exec.Command("kubectl", "get", "endpointslices.discovery.k8s.io", "-n", namespace,
+					"-l", "kubernetes.io/service-name=nvtenant-operator-webhook-service",
+					"-o", "jsonpath={range .items[*]}{range .endpoints[*]}{.addresses[*]}{end}{end}")
+				output, err := utils.Run(cmd)
+				g.Expect(err).NotTo(HaveOccurred(), "Webhook endpoints should exist")
+				g.Expect(output).ShouldNot(BeEmpty(), "Webhook endpoints not yet ready")
+			}
+			Eventually(verifyWebhookEndpointsReady, 3*time.Minute, time.Second).Should(Succeed())
+
+			By("verifying the validating webhook server is ready")
+			verifyValidatingWebhookReady := func(g Gomega) {
+				cmd := exec.Command("kubectl", "get", "validatingwebhookconfigurations.admissionregistration.k8s.io",
+					"nvtenant-operator-validating-webhook-configuration",
+					"-o", "jsonpath={.webhooks[0].clientConfig.caBundle}")
+				output, err := utils.Run(cmd)
+				g.Expect(err).NotTo(HaveOccurred(), "ValidatingWebhookConfiguration should exist")
+				g.Expect(output).ShouldNot(BeEmpty(), "Validating webhook CA bundle not yet injected")
+			}
+			Eventually(verifyValidatingWebhookReady, 3*time.Minute, time.Second).Should(Succeed())
+
+			By("waiting additional time for webhook server to stabilize")
+			time.Sleep(5 * time.Second)
+
 			// +kubebuilder:scaffold:e2e-metrics-webhooks-readiness
 
 			By("creating the curl-metrics pod to access the metrics endpoint")
@@ -266,6 +306,30 @@ var _ = Describe("Manager", Ordered, func() {
 				g.Expect(metricsOutput).To(ContainSubstring("< HTTP/1.1 200 OK"))
 			}
 			Eventually(verifyMetricsAvailable, 2*time.Minute).Should(Succeed())
+		})
+
+		It("should provisioned cert-manager", func() {
+			By("validating that cert-manager has the certificate Secret")
+			verifyCertManager := func(g Gomega) {
+				cmd := exec.Command("kubectl", "get", "secrets", "webhook-server-cert", "-n", namespace)
+				_, err := utils.Run(cmd)
+				g.Expect(err).NotTo(HaveOccurred())
+			}
+			Eventually(verifyCertManager).Should(Succeed())
+		})
+
+		It("should have CA injection for validating webhooks", func() {
+			By("checking CA injection for validating webhooks")
+			verifyCAInjection := func(g Gomega) {
+				cmd := exec.Command("kubectl", "get",
+					"validatingwebhookconfigurations.admissionregistration.k8s.io",
+					"nvtenant-operator-validating-webhook-configuration",
+					"-o", "go-template={{ range .webhooks }}{{ .clientConfig.caBundle }}{{ end }}")
+				vwhOutput, err := utils.Run(cmd)
+				g.Expect(err).NotTo(HaveOccurred())
+				g.Expect(len(vwhOutput)).To(BeNumerically(">", 10))
+			}
+			Eventually(verifyCAInjection).Should(Succeed())
 		})
 
 		// +kubebuilder:scaffold:e2e-webhooks-checks
