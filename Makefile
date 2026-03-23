@@ -259,7 +259,7 @@ endef
 ## Helm binary to use for deploying the chart
 HELM ?= helm
 ## Namespace to deploy the Helm release
-HELM_NAMESPACE ?= neuvector-system
+HELM_NAMESPACE ?= nvtenant-operator
 ## Name of the Helm release
 HELM_RELEASE ?= neuvector
 ## Path to the Helm chart directory

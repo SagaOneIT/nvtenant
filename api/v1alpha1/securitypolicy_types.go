@@ -17,11 +17,14 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
 
 const dateFormat = "02/01/2006"
@@ -67,6 +70,7 @@ type SecurityPolicyStatus struct {
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:webhook:path=/validate-nvtenant-severinsdigitalsolutions-nl-v1alpha1-securitypolicy,mutating=false,failurePolicy=fail,sideEffects=None,groups=nvtenant.severinsdigitalsolutions.nl,resources=securitypolicies,verbs=create;update,versions=v1alpha1,name=vsecuritypolicy.kb.io,admissionReviewVersions=v1
 
 // SecurityPolicy is the Schema for the securitypolicies API
 type SecurityPolicy struct {
@@ -83,6 +87,40 @@ type SecurityPolicy struct {
 	// status defines the observed state of SecurityPolicy
 	// +optional
 	Status SecurityPolicyStatus `json:"status,omitzero"`
+}
+
+func (r *SecurityPolicy) ValidateCreate(ctx context.Context, obj *SecurityPolicy) (admission.Warnings, error) {
+	return nil, r.validateSecurityPolicy()
+}
+
+func (r *SecurityPolicy) ValidateUpdate(ctx context.Context, oldObj *SecurityPolicy, newObj *SecurityPolicy) (admission.Warnings, error) {
+	return nil, newObj.validateSecurityPolicy()
+}
+
+func (r *SecurityPolicy) ValidateDelete(ctx context.Context, obj *SecurityPolicy) (admission.Warnings, error) {
+	return nil, nil
+}
+
+func (r *SecurityPolicy) validateSecurityPolicy() error {
+	for i, ex := range r.Spec.Exemptions {
+
+		// Validate date is not in the past
+		if ex.ExpiresAt != nil {
+			if ex.ExpiresAt.Time.IsZero() {
+				return fmt.Errorf("exemptions[%d].expiresAt is invalid", i)
+			}
+
+			if time.Now().After(ex.ExpiresAt.Time) {
+				return fmt.Errorf("exemptions[%d].expiresAt cannot be in the past", i)
+			}
+		}
+
+		// Example: ensure CVE format basic sanity
+		if !strings.HasPrefix(ex.CVEID, "CVE-") {
+			return fmt.Errorf("exemptions[%d].cveId must start with CVE-", i)
+		}
+	}
+	return nil
 }
 
 // +kubebuilder:object:root=true
@@ -114,6 +152,11 @@ func (d *Date) UnmarshalJSON(data []byte) error {
 	}
 	d.Time = t
 	return nil
+}
+func (r *SecurityPolicy) SetupWebhookWithManager(mgr ctrl.Manager) error {
+	return ctrl.NewWebhookManagedBy(mgr, r).
+		WithValidator(r).
+		Complete()
 }
 
 // DeepCopyInto is required for controller-gen

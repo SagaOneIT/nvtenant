@@ -3,9 +3,9 @@ kind: Namespace
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: neuvector
+    app.kubernetes.io/name: nvtenant-operator
     control-plane: controller-manager
-  name: neuvector-system
+  name: nvtenant-operator
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -171,18 +171,18 @@ kind: ServiceAccount
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: neuvector
-  name: neuvector-controller-manager
-  namespace: neuvector-system
+    app.kubernetes.io/name: nvtenant-operator
+  name: nvtenant-controller-manager
+  namespace: nvtenant-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: neuvector
-  name: neuvector-leader-election-role
-  namespace: neuvector-system
+    app.kubernetes.io/name: nvtenant-operator
+  name: nvtenant-leader-election-role
+  namespace: nvtenant-operator
 rules:
 - apiGroups:
   - ""
@@ -219,7 +219,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: neuvector-manager-role
+  name: nvtenant-manager-role
 rules:
 - apiGroups:
   - neuvector.com
@@ -262,7 +262,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: neuvector-metrics-auth-role
+  name: nvtenant-metrics-auth-role
 rules:
 - apiGroups:
   - authentication.k8s.io
@@ -280,7 +280,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: neuvector-metrics-reader
+  name: nvtenant-metrics-reader
 rules:
 - nonResourceURLs:
   - /metrics
@@ -292,8 +292,8 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: neuvector
-  name: neuvector-securitypolicy-admin-role
+    app.kubernetes.io/name: nvtenant-operator
+  name: nvtenant-securitypolicy-admin-role
 rules:
 - apiGroups:
   - nvtenant.severinsdigitalsolutions.nl
@@ -313,8 +313,8 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: neuvector
-  name: neuvector-securitypolicy-editor-role
+    app.kubernetes.io/name: nvtenant-operator
+  name: nvtenant-securitypolicy-editor-role
 rules:
 - apiGroups:
   - nvtenant.severinsdigitalsolutions.nl
@@ -340,8 +340,8 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: neuvector
-  name: neuvector-securitypolicy-viewer-role
+    app.kubernetes.io/name: nvtenant-operator
+  name: nvtenant-securitypolicy-viewer-role
 rules:
 - apiGroups:
   - nvtenant.severinsdigitalsolutions.nl
@@ -363,56 +363,56 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: neuvector
-  name: neuvector-leader-election-rolebinding
-  namespace: neuvector-system
+    app.kubernetes.io/name: nvtenant-operator
+  name: nvtenant-leader-election-rolebinding
+  namespace: nvtenant-operator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: neuvector-leader-election-role
+  name: nvtenant-leader-election-role
 subjects:
 - kind: ServiceAccount
-  name: neuvector-controller-manager
-  namespace: neuvector-system
+  name: nvtenant-controller-manager
+  namespace: nvtenant-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: neuvector
-  name: neuvector-manager-rolebinding
+    app.kubernetes.io/name: nvtenant-operator
+  name: nvtenant-manager-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: neuvector-manager-role
+  name: nvtenant-manager-role
 subjects:
 - kind: ServiceAccount
-  name: neuvector-controller-manager
-  namespace: neuvector-system
+  name: nvtenant-controller-manager
+  namespace: nvtenant-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: neuvector-metrics-auth-rolebinding
+  name: nvtenant-metrics-auth-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: neuvector-metrics-auth-role
+  name: nvtenant-metrics-auth-role
 subjects:
 - kind: ServiceAccount
-  name: neuvector-controller-manager
-  namespace: neuvector-system
+  name: nvtenant-controller-manager
+  namespace: nvtenant-operator
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: neuvector
+    app.kubernetes.io/name: nvtenant-operator
     control-plane: controller-manager
-  name: neuvector-controller-manager-metrics-service
-  namespace: neuvector-system
+  name: nvtenant-controller-manager-metrics-service
+  namespace: nvtenant-operator
 spec:
   ports:
   - name: https
@@ -420,7 +420,24 @@ spec:
     protocol: TCP
     targetPort: 8443
   selector:
-    app.kubernetes.io/name: neuvector
+    app.kubernetes.io/name: nvtenant-operator
+    control-plane: controller-manager
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: nvtenant-operator
+  name: nvtenant-webhook-service
+  namespace: nvtenant-operator
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+    targetPort: 9443
+  selector:
+    app.kubernetes.io/name: nvtenant-operator
     control-plane: controller-manager
 ---
 apiVersion: apps/v1
@@ -428,22 +445,22 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: neuvector
+    app.kubernetes.io/name: nvtenant-operator
     control-plane: controller-manager
-  name: neuvector-controller-manager
-  namespace: neuvector-system
+  name: nvtenant-controller-manager
+  namespace: nvtenant-operator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: neuvector
+      app.kubernetes.io/name: nvtenant-operator
       control-plane: controller-manager
   template:
     metadata:
       annotations:
         kubectl.kubernetes.io/default-container: manager
       labels:
-        app.kubernetes.io/name: neuvector
+        app.kubernetes.io/name: nvtenant-operator
         control-plane: controller-manager
     spec:
       containers:
@@ -451,9 +468,11 @@ spec:
         - --metrics-bind-address=:8443
         - --leader-elect
         - --health-probe-bind-address=:8081
+        - --webhook-cert-path=/tmp/k8s-webhook-server/serving-certs
         command:
         - /manager
         image: controller:latest
+        imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
             path: /healthz
@@ -461,7 +480,10 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
         name: manager
-        ports: []
+        ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
         readinessProbe:
           httpGet:
             path: /readyz
@@ -481,11 +503,110 @@ spec:
             drop:
             - ALL
           readOnlyRootFilesystem: true
-        volumeMounts: []
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: webhook-certs
+          readOnly: true
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
-      serviceAccountName: neuvector-controller-manager
+      serviceAccountName: nvtenant-controller-manager
       terminationGracePeriodSeconds: 10
-      volumes: []
+      volumes:
+      - name: webhook-certs
+        secret:
+          secretName: webhook-server-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: nvtenant-operator
+  name: nvtenant-metrics-certs
+  namespace: nvtenant-operator
+spec:
+  dnsNames:
+  - SERVICE_NAME.SERVICE_NAMESPACE.svc
+  - SERVICE_NAME.SERVICE_NAMESPACE.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: nvtenant-selfsigned-issuer
+  secretName: metrics-server-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: nvtenant-operator
+  name: nvtenant-serving-cert
+  namespace: nvtenant-operator
+spec:
+  dnsNames:
+  - nvtenant-webhook-service.nvtenant-operator.svc
+  - nvtenant-webhook-service.nvtenant-operator.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: nvtenant-selfsigned-issuer
+  secretName: webhook-server-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: nvtenant-operator
+  name: nvtenant-selfsigned-issuer
+  namespace: nvtenant-operator
+spec:
+  selfSigned: {}
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: nvtenant-operator/nvtenant-serving-cert
+  name: nvtenant-validating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: nvtenant-webhook-service
+      namespace: nvtenant-operator
+      path: /validate-nvtenant-severinsdigitalsolutions-nl-v1alpha1-securitypolicy
+  failurePolicy: Fail
+  name: vsecuritypolicy-v1alpha1.kb.io
+  rules:
+  - apiGroups:
+    - nvtenant.severinsdigitalsolutions.nl
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - securitypolicies
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: nvtenant-webhook-service
+      namespace: nvtenant-operator
+      path: /validate-nvtenant-severinsdigitalsolutions-nl-v1alpha1-securitypolicy
+  failurePolicy: Fail
+  name: vsecuritypolicy.kb.io
+  rules:
+  - apiGroups:
+    - nvtenant.severinsdigitalsolutions.nl
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - securitypolicies
+  sideEffects: None

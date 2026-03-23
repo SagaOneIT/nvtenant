@@ -1,4 +1,4 @@
-# This rule is not used by the project neuvector itself.
+# This rule is not used by the project nvtenant-operator itself.
 # It is provided to allow the cluster admin to help manage permissions for users.
 #
 # Grants full permissions ('*') over nvtenant.severinsdigitalsolutions.nl.
@@ -11,17 +11,17 @@ metadata:
   labels:
     app.kubernetes.io/name: nvtenant-operator
     app.kubernetes.io/managed-by: kustomize
-  name: securitypolicy-admin-role
+  name: securitynotificationpolicy-admin-role
 rules:
 - apiGroups:
   - nvtenant.severinsdigitalsolutions.nl
   resources:
-  - securitypolicies
+  - securitynotificationpolicies
   verbs:
   - '*'
 - apiGroups:
   - nvtenant.severinsdigitalsolutions.nl
   resources:
-  - securitypolicies/status
+  - securitynotificationpolicies/status
   verbs:
   - get

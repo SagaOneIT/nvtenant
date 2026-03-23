@@ -10,8 +10,8 @@ plugins:
   helm.kubebuilder.io/v2-alpha:
     manifests: dist/install.yaml
     output: dist
-projectName: neuvector
-repo: SagaOneIT\nvtenant
+projectName: nvtenant-operator
+repo: nvtenant.severinsdigitalsolutions.nl
 resources:
 - api:
     crdVersion: v1
@@ -20,6 +20,18 @@ resources:
   domain: severinsdigitalsolutions.nl
   group: nvtenant
   kind: SecurityPolicy
+  path: nvtenant.severinsdigitalsolutions.nl/api/v1alpha1
+  version: v1alpha1
+  webhooks:
+    validation: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: severinsdigitalsolutions.nl
+  group: nvtenant
+  kind: SecurityNotificationPolicy
   path: nvtenant.severinsdigitalsolutions.nl/api/v1alpha1
   version: v1alpha1
 version: "3"
